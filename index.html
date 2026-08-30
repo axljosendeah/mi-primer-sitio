@@ -1,72 +1,135 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Mi Portafolio Digital</title>
+    <meta charset="UTF-8">
+    <title>Akinator Interactivo</title>
     <style>
         body {
-            background-color: #f4f7f6;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333333;
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            background-color: #0f172a; /* Fondo oscuro estilo videojuego */
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
         }
-        h1 { color: #4a90e2; }
-        h2 { color: #777777; font-weight: 400; }
-        ul { background: #eef5fc; padding: 20px 40px; border-radius: 8px; }
-        li { margin-bottom: 10px; }
+        .chat-container {
+            width: 100%;
+            max-width: 450px;
+            height: 80vh;
+            background-color: #1e293b;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        .chat-header {
+            background-color: #3b82f6; /* Azul Akinator */
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .message {
+            max-width: 75%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        .message.bot {
+            background-color: #475569;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+        .message.user {
+            background-color: #2563eb;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+        .chat-input-area {
+            padding: 15px;
+            background-color: #0f172a;
+            display: flex;
+            gap: 10px;
+        }
+        input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background-color: #334155;
+            color: white;
+            font-size: 1rem;
+        }
+        input:focus { outline: 2px solid #3b82f6; }
         button {
-            background-color: #4a90e2;
+            background-color: #3b82f6;
             color: white;
             border: none;
-            padding: 12px 20px;
-            font-size: 16px;
-            border-radius: 5px;
+            padding: 0 20px;
+            border-radius: 8px;
             cursor: pointer;
-            width: 100%;
-            margin-top: 20px;
-            transition: 0.2s; /* Hace que el cambio de color sea suave */
+            font-weight: bold;
+            transition: 0.2s;
         }
-        button:hover { background-color: #357abd; }
+        button:hover { background-color: #2563eb; }
     </style>
 </head>
 <body>
 
-    <h1>Hola, soy Jose</h1>
-    <h2>Futuro Desarrollador Full Stack</h2>
+    <div class="chat-container">
+        <div class="chat-header">🧙‍♂️ El Genio Adivino</div>
+        
+        <!-- Aquí se irán acumulando los mensajes -->
+        <div class="chat-messages" id="historial-chat">
+            <div class="message bot">¡Hola! Soy el genio adivino. Piensa en algo, salúdame y dime tu primera pista. Intentaré adivinarlo...</div>
+        </div>
+        
+        <div class="chat-input-area">
+            <input type="text" id="mensaje-usuario" placeholder="Escribe tu saludo o pista aquí..." autocomplete="off">
+            <button id="btn-enviar">Enviar</button>
+        </div>
+    </div>
 
-    <p>Estoy aprendiendo a programar desde cero. Ayer dominé el despliegue en la nube con Render y hoy estoy construyendo mi propio sitio web con HTML, CSS y JavaScript.</p>
-
-    <h3>Mis Logros en este Curso:</h3>
-    <ul>
-        <li>Conexión de GitHub con la nube.</li>
-        <li>Creación de bases de datos PostgreSQL.</li>
-        <li>Estructuración de páginas con HTML.</li>
-        <li>Estilos visuales modernos con CSS.</li>
-        <li>Interactividad dinámica con JavaScript.</li>
-    </ul>
-
-    <!-- Le agregamos un "id" al botón para que JavaScript pueda encontrarlo -->
-    <button id="boton-contacto">¡Contáctame por email!</button>
-
-    <!-- 🚀 Aquí empieza JavaScript -->
     <script>
-        // 1. Buscamos el botón en la página usando su ID
-        const miBoton = document.getElementById('boton-contacto');
+        const btnEnviar = document.getElementById('btn-enviar');
+        const inputUsuario = document.getElementById('mensaje-usuario');
+        const historialChat = document.getElementById('historial-chat');
 
-        // 2. Le decimos al botón que se quede "escuchando" hasta que alguien le haga clic
-        miBoton.addEventListener('click', function() {
-            
-            // Acción A: Muestra un mensaje emergente en la pantalla
-            alert('¡Gracias por el interés! Te redirigiré para enviar el correo.');
-            
-            // Acción B: Abre el gestor de correos con tu dirección (puedes cambiar "tu-correo@email.com" por el tuyo real)
-            window.location.href = 'mailto:tu-correo@://email.com desde tu web';
+        function enviarMensaje() {
+            const texto = inputUsuario.value.trim();
+            if (texto === "") return; // No enviar si está vacío
+
+            # 1. Crear la burbuja del usuario en la pantalla
+            const nuevaBurbuja = document.createElement('div');
+            nuevaBurbuja.className = 'message user';
+            nuevaBurbuja.textContent = texto;
+            historialChat.appendChild(nuevaBurbuja);
+
+            # Limpiar el cuadro de texto y hacer scroll hacia abajo
+            inputUsuario.value = "";
+            historialChat.scrollTop = historialChat.scrollHeight;
+
+            # 2. Nota para el siguiente paso:
+            # Aquí es donde JavaScript enviará este texto a tu Backend de Python en Render
+        }
+
+        # Escuchar el botón de clic y la tecla Enter
+        btnEnviar.addEventListener('click', enviarMensaje);
+        inputUsuario.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') enviarMensaje();
         });
     </script>
-
 </body>
 </html>
