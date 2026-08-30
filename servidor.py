@@ -4,7 +4,7 @@ import httpx
 
 app = FastAPI()
 
-# Permitir que las páginas web se comuniquen con este servidor sin bloqueos
+# Permitir que las páginas web se comuniquen con este servidor sin bloqueos (CORS)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -32,17 +32,24 @@ async def recibir_pista(datos: dict, request: Request):
     ip_cliente = request.headers.get("X-Forwarded-For", request.client.host)
     
     if ip_cliente:
-        # Tomamos la primera IP de la lista y limpiamos espacios con la lógica [0].strip()
+        # Tomamos la primera IP de la lista
         partida["ip"] = ip_cliente.split(",")[0].strip()
 
     # RASTREAR UBICACIÓN: Si la IP es válida y no es local, consultamos la API de mapas
     if partida["ubicacion"] == "Desconocida" and partida["ip"] not in ["127.0.0.1", "localhost", "No detectada"]:
         try:
             async with httpx.AsyncClient() as client:
-                res = await client.get(f"https://ipapi.co{partida['ip']}/json/")
+                # CORRECCIÓN: Se agregó la barra '/' despues de .co
+                url = f"https://ipapi.co/{partida['ip']}/json/"
+                res = await client.get(url, headers={"User-Agent": "Mozilla/5.0"})
+                
                 if res.status_code == 200:
                     info = res.json()
-                    partida["ubicacion"] = f"{info.get('city', 'Ciudad desconocida')}, {info.get('country_name', 'País desconocido')}"
+                    ciudad = info.get('city', 'Ciudad desconocida')
+                    pais = info.get('country_name', 'País desconocido')
+                    partida["ubicacion"] = f"{ciudad}, {pais}"
+                else:
+                    partida["ubicacion"] = "Ubicación no encontrada"
         except Exception:
             partida["ubicacion"] = "Error al localizar"
 
@@ -50,20 +57,20 @@ async def recibir_pista(datos: dict, request: Request):
 
 # 2. RUTA PARA EL ADMIN: Recibir tus respuestas
 @app.post("/enviar-respuesta")
-def recibir_respuesta(datos: dict):
+async def recibir_respuesta(datos: dict):
     texto = datos.get("texto", "")
     if texto:
         partida["respuestas_genio"].append(texto)
     return {"status": "ok"}
 
-# 3. RUTA DE MONITOREO: Para descargar los datos actualizados cada 2 segundos
+# 3. RUTA DE MONITOREO: Para consultar los datos actualizados desde el frontend
 @app.get("/actualizar-partida")
-def actualizar_partida():
+async def actualizar_partida():
     return partida
 
-# 4. RUTA DE LIMPIEZA: Para reiniciar el juego cuando gustes
+# 4. RUTA DE LIMPIEZA: Para reiniciar el juego
 @app.post("/reiniciar")
-def reiniciar():
+async def reiniciar():
     partida["mensajes_usuario"] = []
     partida["respuestas_genio"] = []
     partida["ip"] = "No detectada"
