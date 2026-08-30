@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Secreto del Genio (Admin)</title>
+    <style>
+        body {
+            background-color: #0f172a;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 20px;
+            color: white;
+        }
+        .admin-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        h1 { color: #f59e0b; border-bottom: 2px solid #334155; padding-bottom: 10px; }
+        .info-panel {
+            background-color: #334155;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .info-panel span { color: #10b981; font-weight: bold; }
+        .messages-log {
+            background-color: #0f172a;
+            height: 300px;
+            overflow-y: auto;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .log-item { padding: 8px 12px; border-radius: 6px; font-size: 0.95rem; }
+        .log-item.user-text { background-color: rgba(37, 99, 235, 0.2); border-left: 4px solid #2563eb; }
+        .log-item.my-text { background-color: rgba(245, 158, 11, 0.2); border-left: 4px solid #f59e0b; }
+        .reply-area { display: flex; gap: 10px; }
+        input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background-color: #334155;
+            color: white;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #f59e0b;
+            color: black;
+            border: none;
+            padding: 0 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        button:hover { background-color: #d97706; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        <h1>🧙‍♂️ Consola Secreta del Genio</h1>
+        
+        <!-- Aquí veremos los datos que capturemos del usuario -->
+        <div class="info-panel">
+            <p>🌐 IP del Jugador: <span id="ip-jugador">Cargando...</span></p>
+            <p>📍 Ubicación Estimada: <span id="ubicacion-jugador">Cargando...</span></p>
+        </div>
+
+        <h3>💬 Historial de Pistas en Tiempo Real</h3>
+        <div class="messages-log" id="registro-mensajes">
+            <div class="log-item user-text"><b>Jugador:</b> (Aquí aparecerán los saludos y pistas que escriba el usuario)</div>
+            <div class="log-item my-text"><b>Tú (Genio):</b> ¡Hola! Soy el genio adivino...</div>
+        </div>
+
+        <h3>✍️ Enviar Siguiente Opción o Adivinanza</h3>
+        <div class="reply-area">
+            <input type="text" id="respuesta-admin" placeholder="Escribe las opciones (ej: ¿Es un animal?, ¿Es de color verde?)..." autocomplete="off">
+            <button id="btn-responder">Enviar al Chat</button>
+        </div>
+    </div>
+
+    <script>
+        // Nota para el Paso 3: Aquí usaremos JavaScript para pedirle al servidor de Python
+        // que traiga los nuevos mensajes del usuario y envíe nuestras respuestas de vuelta.
+    </script>
+</body>
+</html>
