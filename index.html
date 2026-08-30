@@ -2,55 +2,35 @@
 <html>
 <head>
     <title>Mi Portafolio Digital</title>
-    
-    <!-- Aquí empieza la magia del diseño con CSS -->
     <style>
         body {
-            background-color: #f4f7f6; /* Un fondo gris claro muy elegante */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Letra más moderna */
-            color: #333333; /* Texto gris oscuro, más suave para la vista que el negro puro */
-            max-width: 600px; /* Evita que el texto se estire demasiado en pantallas grandes */
-            margin: 50px auto; /* Centra automáticamente todo el contenido en la pantalla */
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333333;
+            max-width: 600px;
+            margin: 50px auto;
             padding: 20px;
-            background: white; /* Caja blanca para el contenido */
-            border-radius: 10px; /* Bordes redondeados para la caja */
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.1); /* Una sombra suave para dar profundidad */
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
         }
-
-        h1 {
-            color: #4a90e2; /* Título principal en azul moderno */
-        }
-
-        h2 {
-            color: #777777;
-            font-weight: 400; /* Letra un poco más delgada para el subtítulo */
-        }
-
-        ul {
-            background: #eef5fc; /* Fondo azul clarito para la lista */
-            padding: 20px 40px;
-            border-radius: 8px;
-        }
-
-        li {
-            margin-bottom: 10px; /* Separación entre cada elemento de la lista */
-        }
-
+        h1 { color: #4a90e2; }
+        h2 { color: #777777; font-weight: 400; }
+        ul { background: #eef5fc; padding: 20px 40px; border-radius: 8px; }
+        li { margin-bottom: 10px; }
         button {
-            background-color: #4a90e2; /* Botón azul */
-            color: white; /* Letras blancas */
-            border: none; /* Quita el borde feo por defecto */
-            padding: 12px 20px; /* Le da tamaño al botón */
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 12px 20px;
             font-size: 16px;
-            border-radius: 5px; /* Bordes redondeados */
-            cursor: pointer; /* Hace que aparezca la manito al pasar el mouse */
-            width: 100%; /* El botón ocupa todo el ancho disponible */
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
             margin-top: 20px;
+            transition: 0.2s; /* Hace que el cambio de color sea suave */
         }
-
-        button:hover {
-            background-color: #357abd; /* El botón cambia a un azul más oscuro al pasar el mouse */
-        }
+        button:hover { background-color: #357abd; }
     </style>
 </head>
 <body>
@@ -58,7 +38,7 @@
     <h1>Hola, soy Jose</h1>
     <h2>Futuro Desarrollador Full Stack</h2>
 
-    <p>Estoy aprendiendo a programar desde cero. Ayer dominé el despliegue en la nube con Render y hoy estoy construyendo mi propio sitio web con HTML y CSS.</p>
+    <p>Estoy aprendiendo a programar desde cero. Ayer dominé el despliegue en la nube con Render y hoy estoy construyendo mi propio sitio web con HTML, CSS y JavaScript.</p>
 
     <h3>Mis Logros en este Curso:</h3>
     <ul>
@@ -66,9 +46,27 @@
         <li>Creación de bases de datos PostgreSQL.</li>
         <li>Estructuración de páginas con HTML.</li>
         <li>Estilos visuales modernos con CSS.</li>
+        <li>Interactividad dinámica con JavaScript.</li>
     </ul>
 
-    <button>¡Contáctame por email!</button>
+    <!-- Le agregamos un "id" al botón para que JavaScript pueda encontrarlo -->
+    <button id="boton-contacto">¡Contáctame por email!</button>
+
+    <!-- 🚀 Aquí empieza JavaScript -->
+    <script>
+        // 1. Buscamos el botón en la página usando su ID
+        const miBoton = document.getElementById('boton-contacto');
+
+        // 2. Le decimos al botón que se quede "escuchando" hasta que alguien le haga clic
+        miBoton.addEventListener('click', function() {
+            
+            // Acción A: Muestra un mensaje emergente en la pantalla
+            alert('¡Gracias por el interés! Te redirigiré para enviar el correo.');
+            
+            // Acción B: Abre el gestor de correos con tu dirección (puedes cambiar "tu-correo@email.com" por el tuyo real)
+            window.location.href = 'mailto:tu-correo@://email.com desde tu web';
+        });
+    </script>
 
 </body>
 </html>
