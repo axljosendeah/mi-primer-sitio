@@ -24,7 +24,7 @@ partida = {
 # 1. RUTA PARA EL JUGADOR: Recibir sus pistas
 @app.post("/enviar-pista")
 async def recibir_pista(datos: dict, request: Request):
-    texto = datos.get("texto", "")
+    partida["ip"] = ip_cliente.split(",")[0].strip()
     if texto:
         partida["mensajes_usuario"].append(texto)
     
