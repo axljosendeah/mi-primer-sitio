@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Secreto del Genio (Admin)</title>
     <style>
         body {
@@ -18,13 +19,33 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        h1 { color: #f59e0b; border-bottom: 2px solid #334155; padding-bottom: 10px; }
+        .header-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        h1 { color: #f59e0b; margin: 0; font-size: 1.5rem; }
+        .btn-reset {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-reset:hover { background-color: #dc2626; }
         .info-panel {
             background-color: #334155;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
         }
+        .info-panel p { margin: 5px 0; }
         .info-panel span { color: #10b981; font-weight: bold; }
         .messages-log {
             background-color: #0f172a;
@@ -38,7 +59,7 @@
             flex-direction: column;
             gap: 10px;
         }
-        .log-item { padding: 8px 12px; border-radius: 6px; font-size: 0.95rem; }
+        .log-item { padding: 8px 12px; border-radius: 6px; font-size: 0.95rem; word-wrap: break-word; }
         .log-item.user-text { background-color: rgba(37, 99, 235, 0.2); border-left: 4px solid #2563eb; }
         .log-item.my-text { background-color: rgba(245, 158, 11, 0.2); border-left: 4px solid #f59e0b; }
         .reply-area { display: flex; gap: 10px; }
@@ -51,7 +72,8 @@
             color: white;
             font-size: 1rem;
         }
-        button {
+        input:focus { outline: 2px solid #f59e0b; }
+        .btn-send {
             background-color: #f59e0b;
             color: black;
             border: none;
@@ -61,15 +83,18 @@
             font-weight: bold;
             transition: 0.2s;
         }
-        button:hover { background-color: #d97706; }
+        .btn-send:hover { background-color: #d97706; }
     </style>
 </head>
 <body>
 
     <div class="admin-container">
-        <h1>🧙‍♂️ Consola Secreta del Genio</h1>
+        <div class="header-panel">
+            <h1>🧙‍♂️ Consola Secreta del Genio</h1>
+            <button class="btn-reset" id="btn-reiniciar">Reiniciar Juego</button>
+        </div>
         
-        <!-- Aquí veremos los datos que capturemos del usuario -->
+        <!-- Panel de información técnica del jugador -->
         <div class="info-panel">
             <p>🌐 IP del Jugador: <span id="ip-jugador">Cargando...</span></p>
             <p>📍 Ubicación Estimada: <span id="ubicacion-jugador">Cargando...</span></p>
@@ -77,43 +102,119 @@
 
         <h3>💬 Historial de Pistas en Tiempo Real</h3>
         <div class="messages-log" id="registro-mensajes">
-            <div class="log-item user-text"><b>Jugador:</b> (Aquí aparecerán los saludos y pistas que escriba el usuario)</div>
             <div class="log-item my-text"><b>Tú (Genio):</b> ¡Hola! Soy el genio adivino...</div>
         </div>
 
         <h3>✍️ Enviar Siguiente Opción o Adivinanza</h3>
         <div class="reply-area">
             <input type="text" id="respuesta-admin" placeholder="Escribe las opciones (ej: ¿Es un animal?, ¿Es de color verde?)..." autocomplete="off">
-            <button id="btn-responder">Enviar al Chat</button>
+            <button class="btn-send" id="btn-responder">Enviar al Chat</button>
         </div>
     </div>
-    
-        <script src="/socket.io/socket.io.js"></script>
-<script>
-    const socket = io();
 
-    // 1. Recibir y mostrar la IP y Ubicación
-    socket.on('actualizar_ip', (data) => {
-        document.getElementById('ip-txt').innerText = data.ip; // Asegúrate de asignar IDs en tu HTML
-        document.getElementById('ubicacion-txt').innerText = data.ubicacion;
-    });
+    <script>
+        // 🚨 CAMBIA ESTA URL POR LA URL REAL DE TU BACKEND EN RENDER
+        const BACKEND_URL = "https://mi-primer-sitio-v2.onrender.com";
 
-    // 2. Recibir mensajes que escribe el jugador
-    socket.on('mensaje_para_admin', (msgJugador) => {
-        const contenedorHistorial = document.querySelector('.historial');
-        // Renderizar el mensaje en el bloque de "Jugador:"
-    });
+        const ipElement = document.getElementById('ip-jugador');
+        const ubicacionElement = document.getElementById('ubicacion-jugador');
+        const registroMensajes = document.getElementById('registro-mensajes');
+        const inputRespuesta = document.getElementById('respuesta-admin');
+        const btnResponder = document.getElementById('btn-responder');
+        const btnReiniciar = document.getElementById('btn-reiniciar');
 
-    // 3. Enviar respuesta o pista al jugador
-    const botonRespuesta = document.querySelector('.btn-responder');
-    const inputRespuesta = document.querySelector('.input-respuesta');
+        let mensajesUsuarioMostrados = 0;
+        let respuestasGenioMostradas = 0;
 
-    botonRespuesta.addEventListener('click', () => {
-        const respuesta = inputRespuesta.value;
-        if(respuesta.trim() !== "") {
-            socket.emit('respuesta_admin', respuesta);
-            inputRespuesta.value = '';
+        // 1. Consultar constantemente el estado de la partida
+        async function monitorearPartida() {
+            try {
+                const res = await fetch(`${BACKEND_URL}/actualizar-partida`);
+                if (!res.ok) return;
+
+                const datos = await res.json();
+
+                // Actualizar IP y Ubicación
+                ipElement.innerText = datos.ip || "No detectada";
+                ubicacionElement.innerText = datos.ubicacion || "Desconocida";
+
+                // Mostrar nuevos mensajes del jugador
+                if (datos.mensajes_usuario && datos.mensajes_usuario.length > mensajesUsuarioMostrados) {
+                    for (let i = mensajesUsuarioMostrados; i < datos.mensajes_usuario.length; i++) {
+                        const nuevoLog = document.createElement('div');
+                        nuevoLog.className = 'log-item user-text';
+                        nuevoLog.innerHTML = `<b>Jugador:</b> ${datos.mensajes_usuario[i]}`;
+                        registroMensajes.appendChild(nuevoLog);
+                    }
+                    mensajesUsuarioMostrados = datos.mensajes_usuario.length;
+                    registroMensajes.scrollTop = registroMensajes.scrollHeight;
+                }
+
+                // Mostrar nuevas respuestas enviadas por el admin
+                if (datos.respuestas_genio && datos.respuestas_genio.length > respuestasGenioMostradas) {
+                    for (let i = respuestasGenioMostradas; i < datos.respuestas_genio.length; i++) {
+                        const nuevoLog = document.createElement('div');
+                        nuevoLog.className = 'log-item my-text';
+                        nuevoLog.innerHTML = `<b>Tú (Genio):</b> ${datos.respuestas_genio[i]}`;
+                        registroMensajes.appendChild(nuevoLog);
+                    }
+                    respuestasGenioMostradas = datos.respuestas_genio.length;
+                    registroMensajes.scrollTop = registroMensajes.scrollHeight;
+                }
+
+            } catch (error) {
+                console.error("Error consultando el servidor:", error);
+            }
         }
-    });
-</script>
+
+        // 2. Enviar respuesta al jugador
+        async function enviarRespuesta() {
+            const texto = inputRespuesta.value.trim();
+            if (texto === "") return;
+
+            try {
+                await fetch(`${BACKEND_URL}/enviar-respuesta`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ texto: texto })
+                });
+                inputRespuesta.value = "";
+                monitorearPartida(); // Forzar actualización rápida
+            } catch (error) {
+                console.error("Error al enviar la respuesta:", error);
+            }
+        }
+
+        // 3. Reiniciar la partida
+        async function reiniciarPartida() {
+            if (!confirm("¿Estás seguro de que deseas reiniciar la partida actual?")) return;
+
+            try {
+                await fetch(`${BACKEND_URL}/reiniciar`, { method: 'POST' });
+                
+                // Limpiar pantalla local
+                mensajesUsuarioMostrados = 0;
+                respuestasGenioMostradas = 0;
+                registroMensajes.innerHTML = '<div class="log-item my-text"><b>Tú (Genio):</b> ¡Hola! Soy el genio adivino...</div>';
+                ipElement.innerText = "No detectada";
+                ubicacionElement.innerText = "Desconocida";
+            } catch (error) {
+                console.error("Error al reiniciar:", error);
+            }
+        }
+
+        // Ejecutar monitoreo cada 2 segundos
+        setInterval(monitorearPartida, 2000);
+
+        // Listeners
+        btnResponder.addEventListener('click', enviarRespuesta);
+        btnReiniciar.addEventListener('click', reiniciarPartida);
+        inputRespuesta.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                enviarRespuesta();
+            }
+        });
+    </script>
+</body>
 </html>
