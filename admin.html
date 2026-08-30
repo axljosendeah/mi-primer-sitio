@@ -113,8 +113,10 @@
     </div>
 
     <script>
-        // 🚨 CAMBIA ESTA URL POR LA URL REAL DE TU BACKEND EN RENDER
-        const BACKEND_URL = "https://mi-primer-sitio-v2.onrender.com";
+        // ✅ CORREGIDO: apuntando al Web Service de FastAPI (mi-primer-servidor-python),
+        // NO al Static Site (mi-primer-sitio-v2) que es este mismo panel.
+        // Verifica el nombre exacto en el dashboard de Render (puede tener un sufijo, ej. -xxxx).
+        const BACKEND_URL = "https://mi-primer-servidor-python.onrender.com";
 
         const ipElement = document.getElementById('ip-jugador');
         const ubicacionElement = document.getElementById('ubicacion-jugador');
