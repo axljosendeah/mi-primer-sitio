@@ -87,10 +87,60 @@
             <button id="btn-responder">Enviar al Chat</button>
         </div>
     </div>
+        <script>
+        const btnResponder = document.getElementById('btn-responder');
+        const inputAdmin = document.getElementById('respuesta-admin');
+        const registroMensajes = document.getElementById('registro-mensajes');
+        const txtIp = document.getElementById('ip-jugador');
+        const txtUbicacion = document.getElementById('ubicacion-jugador');
 
-    <script>
-        // Nota para el Paso 3: Aquí usaremos JavaScript para pedirle al servidor de Python
-        // que traiga los nuevos mensajes del usuario y envíe nuestras respuestas de vuelta.
+        // 🚨 TU URL DE BACKEND DE PYTHON
+        const BACKEND_URL = "https://onrender.com";
+
+        // 1. FUNCIÓN PARA TRAER LA PARTIDA EN TIEMPO REAL
+        async function monitorearPartida() {
+            try {
+                const res = await fetch(`${BACKEND_URL}/actualizar-partida`);
+                const datos = await res.json();
+
+                // Mostrar IP y Ubicación capturadas
+                txtIp.textContent = datos.ip;
+                txtUbicacion.textContent = datos.ubicacion;
+
+                // Limpiar el registro visual y redibujar todo el historial ordenado
+                registroMensajes.innerHTML = "";
+                
+                // Combinar de forma simulada los mensajes para verlos en orden
+                datos.mensajes_usuario.forEach(msg => {
+                    registroMensajes.innerHTML += `<div class="log-item user-text"><b>Jugador:</b> ${msg}</div>`;
+                });
+                datos.respuestas_genio.forEach(msg => {
+                    registroMensajes.innerHTML += `<div class="log-item my-text"><b>Tú (Genio):</b> ${msg}</div>`;
+                });
+                
+            } catch (e) { console.log(e); }
+        }
+
+        // 2. FUNCIÓN PARA ENVIAR TU RESPUESTA AL JUGADOR
+        async function enviarRespuesta() {
+            const texto = inputAdmin.value.trim();
+            if (texto === "") return;
+
+            try {
+                await fetch(`${BACKEND_URL}/enviar-respuesta`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ texto: texto })
+                });
+                inputAdmin.value = "";
+                monitorearPartida(); // Actualizar de inmediato
+            } catch (e) { console.error(e); }
+        }
+
+        // Monitorear la consola cada 2 segundos automáticamente
+        setInterval(monitorearPartida, 2000);
+
+        btnResponder.addEventListener('click', enviarRespuesta);
+        inputAdmin.addEventListener('keypress', function(e) { if (e.key === 'Enter') enviarRespuesta(); });
     </script>
-</body>
 </html>
