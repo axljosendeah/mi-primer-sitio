@@ -1,13 +1,14 @@
-# 1. Creamos las variables con los datos correctos del usuario
-usuario_registrado = "jose"
-contrasena_registrada = "render123"
+from fastapi import FastAPI
 
-# 2. Simulamos los datos que alguien escribe al intentar entrar
-usuario_ingresado = "jose"
-contrasena_ingresada = "render123"
+# 1. Creamos la aplicación del servidor
+app = FastAPI()
 
-# 3. Usamos un condicional (IF) para tomar una decisión inteligente
-if usuario_ingresado == usuario_registrado and contrasena_ingresada == contrasena_registrada:
-    print("¡Acceso concedido! Bienvenido al panel de administración.")
-else:
-    print("Error: El usuario o la contraseña son incorrectos.")
+# 2. Creamos una ruta principal (la raíz del sitio)
+@app.get("/")
+def inicio():
+    # Este mensaje se enviará a cualquier persona que visite la URL de Render
+    return {
+        "estado": "servidor_activo",
+        "mensaje": "¡Acceso concedido! Bienvenido al panel de administración en vivo.",
+        "curso": "Backend con Python y FastAPI en Render"
+    }
