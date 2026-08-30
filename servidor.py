@@ -4,7 +4,7 @@ import httpx
 
 app = FastAPI()
 
-# Permitir que las páginas web se comuniquen con este servidor sin bloqueos de seguridad
+# Permitir que las páginas web se comuniquen con este servidor sin bloqueos
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -13,7 +13,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Buzones en memoria para guardar la partida actual
+# Buzón en memoria para guardar los datos de la partida actual
 partida = {
     "mensajes_usuario": [],
     "respuestas_genio": [],
@@ -24,25 +24,26 @@ partida = {
 # 1. RUTA PARA EL JUGADOR: Recibir sus pistas
 @app.post("/enviar-pista")
 async def recibir_pista(datos: dict, request: Request):
-    partida["ip"] = ip_cliente.split(",")[0].strip()
+    texto = datos.get("texto", "")
     if texto:
         partida["mensajes_usuario"].append(texto)
     
-    # Capturar la IP real del jugador (Render la pasa a través de una cabecera llamada X-Forwarded-For)
+    # Capturar la IP real del jugador
     ip_cliente = request.headers.get("X-Forwarded-For", request.client.host)
-    # Si vienen varias IPs separadas por coma, tomamos la primera
-    partida["ip"] = ip_cliente.split(",")[0].strip()
+    
+    if ip_cliente:
+        # Tomamos la primera IP de la lista y limpiamos espacios con la lógica [0].strip()
+        partida["ip"] = ip_cliente.split(",")[0].strip()
 
-    # RASTREAR UBICACIÓN: Si la IP es válida y no la hemos buscado, consultamos un servicio gratuito
-    if partida["ubicacion"] == "Desconocida" and partida["ip"] != "127.0.0.1":
+    # RASTREAR UBICACIÓN: Si la IP es válida y no es local, consultamos la API de mapas
+    if partida["ubicacion"] == "Desconocida" and partida["ip"] not in ["127.0.0.1", "localhost", "No detectada"]:
         try:
             async with httpx.AsyncClient() as client:
-                # Consultamos una API de geolocalización pública
                 res = await client.get(f"https://ipapi.co{partida['ip']}/json/")
                 if res.status_code == 200:
                     info = res.json()
                     partida["ubicacion"] = f"{info.get('city', 'Ciudad desconocida')}, {info.get('country_name', 'País desconocido')}"
-        except:
+        except Exception:
             partida["ubicacion"] = "Error al localizar"
 
     return {"status": "ok"}
@@ -55,12 +56,12 @@ def recibir_respuesta(datos: dict):
         partida["respuestas_genio"].append(texto)
     return {"status": "ok"}
 
-# 3. RUTA DE MONITOREO: Para que ambas pantallas descarguen la información actualizada
+# 3. RUTA DE MONITOREO: Para descargar los datos actualizados cada 2 segundos
 @app.get("/actualizar-partida")
 def actualizar_partida():
     return partida
 
-# 4. RUTA DE LIMPIEZA: Para reiniciar el juego cuando quieras
+# 4. RUTA DE LIMPIEZA: Para reiniciar el juego cuando gustes
 @app.post("/reiniciar")
 def reiniciar():
     partida["mensajes_usuario"] = []
