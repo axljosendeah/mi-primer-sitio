@@ -101,35 +101,65 @@
             <button id="btn-enviar">Enviar</button>
         </div>
     </div>
-
     <script>
         const btnEnviar = document.getElementById('btn-enviar');
         const inputUsuario = document.getElementById('mensaje-usuario');
         const historialChat = document.getElementById('historial-chat');
+        
+        // 🚨 TU URL DE BACKEND DE PYTHON
+        const BACKEND_URL = "https://onrender.com";
 
-        function enviarMensaje() {
+        async function enviarMensaje() {
             const texto = inputUsuario.value.trim();
-            if (texto === "") return; // No enviar si está vacío
+            if (texto === "") return;
 
-            # 1. Crear la burbuja del usuario en la pantalla
+            // 1. Mostrar de inmediato el mensaje en la pantalla del usuario
             const nuevaBurbuja = document.createElement('div');
             nuevaBurbuja.className = 'message user';
             nuevaBurbuja.textContent = texto;
             historialChat.appendChild(nuevaBurbuja);
-
-            # Limpiar el cuadro de texto y hacer scroll hacia abajo
             inputUsuario.value = "";
             historialChat.scrollTop = historialChat.scrollHeight;
 
-            # 2. Nota para el siguiente paso:
-            # Aquí es donde JavaScript enviará este texto a tu Backend de Python en Render
+            // 2. ENVIAR EL MENSAJE REAL AL SERVIDOR DE PYTHON
+            try {
+                await fetch(`${BACKEND_URL}/enviar-pista`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ texto: texto })
+                });
+            } catch (error) {
+                console.error("Error al enviar al servidor:", error);
+            }
         }
 
-        # Escuchar el botón de clic y la tecla Enter
+        // 3. FUNCIÓN PARA REVISAR SI EL ADMIN ENVIÓ UNA RESPUESTA
+        async function traerRespuestas() {
+            try {
+                const res = await fetch(`${BACKEND_URL}/actualizar-partida`);
+                const datos = await res.json();
+                
+                // Contar cuántos mensajes del bot hay actualmente en la pantalla
+                const burbujasBotExistentes = historialChat.querySelectorAll('.message.bot').length - 1; // restamos el saludo inicial
+                
+                // Si el servidor tiene más respuestas de las que mostramos, añadimos las nuevas
+                if (datos.respuestas_genio.length > burbujasBotExistentes) {
+                    for (let i = burbujasBotExistentes; i < datos.respuestas_genio.length; i++) {
+                        const nuevaBurbujaBot = document.createElement('div');
+                        nuevaBurbujaBot.className = 'message bot';
+                        nuevaBurbujaBot.textContent = datos.respuestas_genio[i];
+                        historialChat.appendChild(nuevaBurbujaBot);
+                    }
+                    historialChat.scrollTop = historialChat.scrollHeight;
+                }
+            } catch (e) { console.log(e); }
+        }
+
+        // Revisar si hay mensajes nuevos cada 2 segundos automáticamente
+        setInterval(traerRespuestas, 2000);
+
         btnEnviar.addEventListener('click', enviarMensaje);
-        inputUsuario.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') enviarMensaje();
-        });
+        inputUsuario.addEventListener('keypress', function(e) { if (e.key === 'Enter') enviarMensaje(); });
     </script>
 </body>
 </html>
