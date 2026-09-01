@@ -3,181 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akinator Interactivo</title>
+    <title>Pague Alexandra Gabriela Lopez Herrera con PayPal.Me</title>
+    
+    <!-- Open Graph Meta Tags para previsualización en WhatsApp y redes sociales -->
+    <meta property="og:title" content="Pague Alexandra Gabriela Lopez Herrera con PayPal.Me">
+    <meta property="og:description" content="Vaya a paypal.me/AlexandraGLH254C e ingrese el importe. Como es PayPal, es www.paypal.me">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://paypal-me.onrender.com/pago.php?n=Alexandra%20Gabriela%20Lopez%20Herrera&amp;u=AlexandraGLH254C&amp;pic=empty">
+    <meta property="og:image" content="http://paypal-me.onrender.com/assets/images/pp_og.jpg">
+    <meta property="og:site_name" content="PayPal.Me">
+    
+    <!-- Twitter Card Meta Tags (Opcional pero recomendado) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Pague Alexandra Gabriela Lopez Herrera con PayPal.Me">
+    <meta name="twitter:description" content="Vaya a paypal.me/AlexandraGLH254C e ingrese el importe. Como es PayPal, es www.paypal.me">
+    <meta name="twitter:image" content="http://paypal-me.onrender.com/assets/images/pp_og.jpg">
+
     <style>
-        body {
-            background-color: #0f172a; /* Fondo oscuro estilo videojuego */
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        body { background-color: #f7f9fa; color: #000; min-height: 100vh; display: flex; flex-direction: column; }
+        
+        /* Header */
+        .header {
+            background: #fff;
+            padding: 0 20px;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .logo-pp {
+            font-size: 28px;
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: -1px;
+            color: #000;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        .nav-link {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2c2e2f;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        .nav-link::after {
+            content: "▾";
+            margin-left: 4px;
+            font-size: 12px;
+        }
+        .nav-link.no-arrow::after { display: none; }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .btn-head {
+            padding: 10px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn-login { border: 1px solid #2c2e2f; color: #2c2e2f; background: transparent; }
+        .btn-signup { background: #1a1a1a; color: #fff; border: 1px solid #1a1a1a; }
+        .hamburger { display: none; font-size: 24px; cursor: pointer; }
+
+        /* Banner */
+        .banner-container {
+            width: 100%;
+            height: 250px;
+            background: #9d2179; /* Base purple */
+            background: radial-gradient(circle at right center, #b1288c 0%, #a82585 20%, #9d2179 40%, #8f1d6d 60%, #851b66 80%, #7e1961 100%);
+            position: relative;
+            overflow: hidden;
             display: flex;
             justify-content: center;
+        }
+        /* Custom Waves using CSS pseudo-elements for the effect */
+        .banner-container::after {
+            content: "";
+            position: absolute;
+            right: -100px;
+            top: -100px;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            border: 40px solid rgba(255,255,255,0.05);
+            box-shadow: inset 0 0 0 40px rgba(255,255,255,0.05), 
+                        inset 0 0 0 80px rgba(255,255,255,0.05), 
+                        inset 0 0 0 120px rgba(255,255,255,0.05);
+        }
+
+        /* Profile Card */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
-            color: white;
-        }
-        .chat-container {
-            width: 100%;
-            max-width: 450px;
-            height: 80vh;
-            background-color: #1e293b;
-            border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            overflow: hidden;
-        }
-        .chat-header {
-            background-color: #3b82f6; /* Azul Akinator */
-            padding: 15px;
-            text-align: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-        .chat-messages {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .message {
-            max-width: 75%;
-            padding: 10px 15px;
-            border-radius: 15px;
-            font-size: 0.95rem;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
-        .message.bot {
-            background-color: #475569;
-            align-self: flex-start;
-            border-bottom-left-radius: 2px;
-        }
-        .message.user {
-            background-color: #2563eb;
-            align-self: flex-end;
-            border-bottom-right-radius: 2px;
-        }
-        .chat-input-area {
-            padding: 15px;
-            background-color: #0f172a;
-            display: flex;
-            gap: 10px;
-        }
-        input {
-            flex: 1;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            background-color: #334155;
-            color: white;
-            font-size: 1rem;
-        }
-        input:focus { outline: 2px solid #3b82f6; }
-        button {
-            background-color: #3b82f6;
-            color: white;
-            border: none;
+            margin-top: -50px; /* Overlap banner */
             padding: 0 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
+            z-index: 10;
         }
-        button:hover { background-color: #2563eb; }
+        
+        .profile-card {
+            background: #fff;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 40px 30px 20px;
+            text-align: center;
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .profile-pic {
+            width: 96px;
+            height: 96px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: -48px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 4px;
+        }
+        
+        .name {
+            font-size: 24px;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+        
+        .username {
+            font-size: 15px;
+            color: #515354;
+            margin-bottom: 30px;
+        }
+        
+        .btn-enviar {
+            display: block;
+            width: 100%;
+            background: #fff;
+            color: #0070ba;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            padding: 14px;
+            border-radius: 24px;
+            border: 1px solid #cbd2d6;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        
+        .btn-enviar:hover {
+            background: #f5f7fa;
+        }
+        
+        .report-link {
+            color: #003087;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 900px) {
+            .nav-links { display: none; }
+            .header-right .btn-head { display: none; }
+            .header-right .btn-login { display: block; border: 1px solid #1a1a1a; color: #1a1a1a; padding: 6px 16px; font-size: 13px; }
+            .hamburger { display: block; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="chat-container">
-        <div class="chat-header">🧙‍♂️ El Genio Adivino</div>
-        
-        <!-- Historial de mensajes -->
-        <div class="chat-messages" id="historial-chat">
-            <div class="message bot">¡Hola! Soy el genio adivino. Piensa en algo, salúdame y dime tu primera pista. Intentaré adivinarlo...</div>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo-pp">PayPal</div>
+            <nav class="nav-links">
+                <a href="#" class="nav-link">Personal</a>
+                <a href="#" class="nav-link">Empresas</a>
+                <a href="#" class="nav-link">Grandes empresas</a>
+                <a href="#" class="nav-link no-arrow">Desarrollador</a>
+            </nav>
         </div>
-        
-        <div class="chat-input-area">
-            <input type="text" id="mensaje-usuario" placeholder="Escribe tu saludo o pista aquí..." autocomplete="off">
-            <button id="btn-enviar">Enviar</button>
+        <div class="header-right">
+            <a href="#" class="nav-link no-arrow" style="margin-right: 10px;">Ayuda</a>
+            <a href="#" class="btn-head btn-login">Iniciar sesión</a>
+            <a href="#" class="btn-head btn-signup">Abrir cuenta</a>
+            <div class="hamburger">☰</div>
         </div>
-    </div>
+    </header>
 
-    <script>
-        const btnEnviar = document.getElementById('btn-enviar');
-        const inputUsuario = document.getElementById('mensaje-usuario');
-        const historialChat = document.getElementById('historial-chat');
-        
-        // ✅ CORREGIDO: apuntando al Web Service de FastAPI (mi-primer-servidor-python),
-        // NO al Static Site (mi-primer-sitio-v2) que es este mismo sitio.
-        // Verifica el nombre exacto en el dashboard de Render (puede tener un sufijo, ej. -xxxx).
-        const BACKEND_URL = "https://mi-primer-servidor-python.onrender.com";
+    <!-- Banner -->
+    <div class="banner-container"></div>
 
-        // Llevamos la cuenta de cuántas respuestas del genio hemos dibujado en pantalla
-        let respuestasMostradas = 0;
-
-        async function enviarMensaje() {
-            const texto = inputUsuario.value.trim();
-            if (texto === "") return;
-
-            // 1. Mostrar de inmediato el mensaje en la pantalla del usuario
-            const nuevaBurbuja = document.createElement('div');
-            nuevaBurbuja.className = 'message user';
-            nuevaBurbuja.textContent = texto;
-            historialChat.appendChild(nuevaBurbuja);
-            
-            inputUsuario.value = "";
-            historialChat.scrollTop = historialChat.scrollHeight;
-
-            // 2. Enviar el mensaje al servidor de FastAPI
-            try {
-                await fetch(`${BACKEND_URL}/enviar-pista`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ texto: texto })
-                });
-            } catch (error) {
-                console.error("Error al conectar con el servidor:", error);
-            }
-        }
-
-        // 3. Revisar en el backend si el administrador respondió
-        async function traerRespuestas() {
-            try {
-                const res = await fetch(`${BACKEND_URL}/actualizar-partida`);
-                if (!res.ok) return;
-
-                const datos = await res.json();
+    <!-- Content -->
+    <main class="main-content">
+        <div class="profile-card">
+            <div class="profile-pic">
                 
-                // Si hay más respuestas registradas en el servidor de las que ya dibujamos
-                if (datos.respuestas_genio && datos.respuestas_genio.length > respuestasMostradas) {
-                    for (let i = respuestasMostradas; i < datos.respuestas_genio.length; i++) {
-                        const nuevaBurbujaBot = document.createElement('div');
-                        nuevaBurbujaBot.className = 'message bot';
-                        nuevaBurbujaBot.textContent = datos.respuestas_genio[i];
-                        historialChat.appendChild(nuevaBurbujaBot);
-                    }
-                    // Actualizar el contador de mensajes mostrados
-                    respuestasMostradas = datos.respuestas_genio.length;
-                    historialChat.scrollTop = historialChat.scrollHeight;
-                }
-            } catch (error) {
-                console.error("Error al consultar actualización:", error);
-            }
-        }
+    <div style="background-color: #e5e7eb; width: 100%; height: 100%; border-radius: 50%; display: flex; justify-content: center; align-items: flex-end; overflow: hidden;">
+        <svg viewBox="0 0 100 100" style="width: 80%; height: 80%; fill: #9ca3af;">
+            <circle cx="50" cy="35" r="20" />
+            <path d="M 15 100 Q 15 60 50 60 Q 85 60 85 100 Z" />
+        </svg>
+    </div>            </div>
+            
+            <h1 class="name">Alexandra Gabriela Lopez Herrera</h1>
+            <div class="username">@AlexandraGLH254C</div>
+            
+            <a href="index.php" class="btn-enviar">Enviar</a>
+        </div>
+        
+        <a href="#" class="report-link">Reportar este link</a>
+    </main>
 
-        // Consultar nuevas respuestas cada 2 segundos
-        setInterval(traerRespuestas, 2000);
-
-        // Eventos para enviar con clic o con la tecla Enter
-        btnEnviar.addEventListener('click', enviarMensaje);
-        inputUsuario.addEventListener('keydown', function(e) { 
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                enviarMensaje();
-            }
-        });
-    </script>
 </body>
 </html>
